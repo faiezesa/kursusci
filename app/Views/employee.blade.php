@@ -53,14 +53,6 @@
                         
                         <div class="card-tools">
                             <div>
-                                <button class="btn btn-sm btn-default" @click="show_filter = true" v-show="!show_filter">
-                                    <i class="fas fa-filter"></i> Show Filter
-                                </button>
-                                <button class="btn btn-sm btn-default" @click="show_filter = false" v-show="show_filter">
-                                    <i class="fas fa-filter"></i> Hide Filter
-                                </button>
-                            </div>
-                            <div v-show="show_filter">
                                 <div class="input-group input-group-sm" style="width: 150px;">
                                     <input @keyup="get_emp_listing(1)" v-model="search" type="text" name="table_search" class="form-control float-right" placeholder="Search">
                                     
@@ -137,7 +129,6 @@
         let dataApp = {
             message: 'Hello Vue!',
             datenow: '',
-            show_filter: false,
             limit: [5, 10, 20, 50, 100],
             selected: 10,
 
