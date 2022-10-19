@@ -5,6 +5,6 @@
         function blade($view, $data = []){
             $path = APPPATH.'Views';
             $blade = new Blade($path, $path.'/cache');
-            echo $blade->render($view, $data);
+            return $blade->render($view, $data);
         }
     }

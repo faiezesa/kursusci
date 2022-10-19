@@ -38,6 +38,8 @@ $routes->set404Override();
 $routes->get('/', 'Home::index');
 $routes->get('/dashboard', 'Home::dashboard');
 $routes->get('/employee', 'Employee::index');
+$routes->get('/employee/download/pdf', 'Employee::download_pdf');
+$routes->get('/employee/download/xls', 'Employee::download_xls');
 //$routes->get('/login', 'Auth::login');
 $routes->get('/logout', 'Auth::logout');
 
@@ -46,6 +48,8 @@ $routes->group('api', function ($routes){
     $routes->post('employee', 'ApiEmployee::listing');
     $routes->post('employee/proses_data', 'ApiEmployee::proses_data');
     $routes->post('employee/delete_data', 'ApiEmployee::delete_data');
+    $routes->get('race', 'APIRace::index');
+    $routes->get('religion', 'APIReligion::index');
 });
 
 $routes->post('/authenticate', 'Auth::ldap_auth');

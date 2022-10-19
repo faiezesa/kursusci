@@ -23,7 +23,7 @@ class Encryption extends BaseConfig
      *
      * @var string
      */
-    public $key = '';
+    public $key = 'In!$@yaPuny@EncrypT!0N';
 
     /**
      * --------------------------------------------------------------------------

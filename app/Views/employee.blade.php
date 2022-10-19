@@ -12,7 +12,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form id="modal_form" action="">
+                        <form id="modal_form" action="" ref="formku">
                             <div class="form-group">
                                 <label for="">Name</label>
                                 <input type="text" class="form-control" name="name" :class="{'is-invalid' : errors.name }" :value="selectedData.name">
@@ -32,6 +32,26 @@
                                 <input type="text" class="form-control" name="icno" :class="{'is-invalid' : errors.icno }" :value="selectedData.icno">
                                 <div v-show="errors.icno" :class="{'invalid-feedback' : errors.icno}">
                                     <span>@{{ errors.icno }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Race @{{ selectedData.race }}</label>
+                                <select name="race" class="form-control" :class="{'is-invalid' : errors.race }">
+                                    <option value="">-- Sila pilih --</option>
+                                    <option :value="r.code" :selected="selectedData.race_code===r.code" v-for="r in race">@{{ r.race }}</option>
+                                </select>
+                                <div v-show="errors.race" :class="{'invalid-feedback' : errors.race}">
+                                    <span>@{{ errors.race }}</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="">Religion</label>
+                                <select name="religion" class="form-control" :class="{'is-invalid' : errors.religion }">
+                                    <option value="">-- Sila pilih --</option>
+                                    <option :value="r.code" :selected="selectedData.religion_code===r.code" v-for="r in religion">@{{ r.religion }}</option>
+                                </select>
+                                <div v-show="errors.religion" :class="{'invalid-feedback' : errors.religion}">
+                                    <span>@{{ errors.religion }}</span>
                                 </div>
                             </div>
                         </form>
@@ -66,6 +86,42 @@
                         </div>
                     </div>
                     <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search Name" v-model="filter_name" @keyup="get_emp_listing(1)">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-default">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search Email" v-model="filter_email" @keyup="get_emp_listing(1)">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-default">
+                                            <i class="fas fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="" id="" class="form-control" v-model="sel_race" @change="get_emp_listing(1)">
+                                    <option value="">- Select Race -</option>
+                                    <option v-for="r in race" :value="r.code">@{{r.race}}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-control" v-model="sel_religion" @change="get_emp_listing(1)">
+                                    <option value="">-- Select Religion --</option>
+                                    <option v-for="(x, index) in religion" :value="x.code">@{{ x.religion }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card-body table-responsive p-0">
                         <table class="table table-hover text-nowrap">
                             <thead>
@@ -73,6 +129,8 @@
                                 <th>No</th>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Race</th>
+                                <th>Religion</th>
                                 <th width="100px">
                                     <button class="btn btn-success pull-right" @click="show_modal('add')">
                                         Add New Data
@@ -85,11 +143,13 @@
                                 <td>@{{numbering+index+1}}.</td>
                                 <td>@{{e.name}} <small>(@{{ e.icno }})</small></td>
                                 <td>@{{e.email}}</td>
+                                <td>@{{e.race}}</td>
+                                <td>@{{e.religion}}</td>
                                 <td class="text-right">
                                     <div class="btn-group btn-group-sm">
                                         <a href="javascript:void(0);" class="btn btn-primary"><i class="fas fa-eye"></i></a>
                                         <a href="javascript:void(0);" class="btn btn-info" @click="show_modal('edit',e)"><i class="fas fa-pencil-alt"></i></a>
-                                        <a href="javascript:void(0);" class="btn btn-danger" @click="delete_data(e.id)"><i class="fas fa-trash"></i></a>
+                                        <a href="javascript:void(0);" class="btn btn-danger" @click="delete_data(e.secure_id)"><i class="fas fa-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -125,13 +185,13 @@
     
     <script>
         let urlApp = '{!! base_url().'/api/employee' !!}';
+        let urlAPI = '{!! base_url().'/api' !!}'
 
         let dataApp = {
             message: 'Hello Vue!',
             datenow: '',
-            limit: [5, 10, 20, 50, 100],
-            selected: 10,
-
+            
+            //modal
             title_modal: '',
             title_btn_modal: '',
             proses_modal: '',
@@ -144,15 +204,33 @@
             per_page: 0,
             total_data: 0,
             numbering: 0,
-
+            limit: [5, 10, 20, 50, 100],
+            selected: 10,
             errors: [],
-
             selectedData: [],
             selected_id: '',
+            
+            //dropdown list
+            race: [],
+            religion:[],
+            sel_race:'',
+            sel_religion:'',
+            
+            filter_name:'',
+            filter_email:'',
         };
 
         let methodApp = {
             show_date() {
+            },
+            get_dropdown(){
+                let self = this;
+                $.get(urlAPI+'/race',function (e){
+                    self.race = e;
+                });
+                $.get(urlAPI+'/religion',function (e){
+                    self.religion = e;
+                });
             },
             show_modal(proses, data = '') {
                 if (proses === 'add') {
@@ -162,16 +240,18 @@
                     this.proses_modal = 'add';
                     this.selectedData = [];
                     this.selected_id = '';
+                    this.$refs.formku.reset()
                     $('#show_modal').modal('show');
                 }
 
                 if (proses === 'edit') {
+                    console.log(data);
                     this.errors = [];
                     this.title_modal = 'Edit';
                     this.title_btn_modal = 'Update';
                     this.proses_modal = 'update';
                     this.selectedData = data;
-                    this.selected_id = data.id;
+                    this.selected_id = data.secure_id;
                     $('#show_modal').modal('show');
                 }
             },
@@ -195,7 +275,8 @@
                             $('#show_modal').modal('hide');
                             self.get_emp_listing(self.page);
                         }
-
+                        self.selectedData =[];
+                        self.errors=[];
                     }
                 });
             },
@@ -226,16 +307,20 @@
                 let self = this;
                 self.page = page;
                 $.post(urlApp, {
+                    race: self.sel_race,
+                    religion: self.sel_religion,
                     limit: self.selected,
                     page: self.page,
                     search: self.search,
+                    filter_name: self.filter_name,
+                    filter_email:self.filter_email,
                 }, function (res) {
                     self.employee = res.data;
                     self.total_page = res.total_page;
                     self.per_page = res.per_page;
                     self.total_data = res.total_data;
                     self.numbering = ((self.page - 1) * res.per_page);
-                    // console.log(self.selected);
+                    // console.log(self.sel_race);
                 });
             },
         };
@@ -243,6 +328,7 @@
         let mountedApp = function (e) {
             e.show_date();
             e.get_emp_listing();
+            e.get_dropdown();
         }
     </script>
     @include('default.vue-default')

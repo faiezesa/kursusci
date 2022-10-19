@@ -6,12 +6,12 @@ class Home extends BaseController
 {
     public function index()
     {
-        $this->render('login.main',[]);
+        return $this->render('login.main',[]);
     }
     
     public function dashboard()
     {
         $data['title'] = 'Home';
-        $this->render('default.main',$data);
+        return $this->render('default.main',$data);
     }
 }
