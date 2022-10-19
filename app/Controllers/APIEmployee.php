@@ -9,6 +9,7 @@
         public function __construct()
         {
             $this->mod = model('App\Models\EmployeeModel');
+            $this->dam = model('App\Models\DeptAssignModel');
         }
         
         public function listing()
@@ -39,6 +40,7 @@
         public function delete_data(){
             $id = $this->request->getVar('del');
             $this->mod->delete($id);
+            $this->dam->where('empt_id',$id)->delete();
         }
         
         public function proses_data()

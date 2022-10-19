@@ -84,6 +84,7 @@ phpunit
 # Composer
 #-------------------------
 vendor/
+Views/cache/
 
 #-------------------------
 # IDE / Development Files
