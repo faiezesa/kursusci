@@ -40,7 +40,7 @@
         public function delete_data(){
             $id = $this->request->getVar('del');
             $this->mod->delete($id);
-            $this->dam->where('empt_id',$id)->delete();
+            $this->dam->where('emp_id',$id)->delete();
         }
         
         public function proses_data()

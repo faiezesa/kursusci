@@ -200,16 +200,23 @@
                 });
             },
             delete_data(id) {
+                let self = this;
                 Swal.fire({
-                    title: 'Do you want to delete?',
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
                     showCancelButton: true,
-                    confirmButtonText: 'Delete',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
                 }).then((result) => {
-                    /* Read more about isConfirmed, isDenied below */
                     if (result.isConfirmed) {
-                        let self = this;
                         $.post(urlApp + '/delete_data', {del: id}, function (res) {
-                            Swal.fire('Success','Data Deleted','success');
+                            Swal.fire(
+                                'Deleted!',
+                                'Your file has been deleted.',
+                                'success'
+                            )
                             self.get_emp_listing(1);
                         });
                     }
