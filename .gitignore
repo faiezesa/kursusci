@@ -84,7 +84,6 @@ phpunit
 # Composer
 #-------------------------
 vendor/
-Views/cache/
 
 #-------------------------
 # IDE / Development Files
@@ -126,3 +125,4 @@ nb-configuration.xml
 /phpunit*.xml
 /.phpunit.*.cache
 
+app/Views/cache/
